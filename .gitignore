@@ -1,3 +1,10 @@
 .vscode
 node_modules
 .eslintcache
+.env
+coverage
+coverage.json
+typechain
+typechain-types
+cache
+artifacts
