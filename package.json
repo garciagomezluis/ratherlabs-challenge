@@ -1,5 +1,16 @@
 {
-  "name": "challenge",
-  "version": "1.0.0",
-  "scripts": {}
+    "name": "challenge",
+    "version": "1.0.0",
+    "scripts": {},
+    "devDependencies": {
+        "eslint": "7.x",
+        "prettier": "2.x",
+        "@typescript-eslint/eslint-plugin": "4.x",
+        "@typescript-eslint/parser": "4.x",
+        "eslint-config-prettier": "8.x",
+        "eslint-plugin-prettier": "3.x",
+        "eslint-config-airbnb-base": "latest",
+        "@luchio/eslint-rules": "1.x",
+        "@luchio/eslint-config-base-ts": "1.x"
+    }
 }
