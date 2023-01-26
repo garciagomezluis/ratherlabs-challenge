@@ -3,22 +3,25 @@ pragma solidity 0.8.17;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "./interfaces/IMasterChef.sol";
+import "./MasterChefManager.sol";
 import "./interfaces/IUniswapV2Factory.sol";
-import "./interfaces/IUniswapV2Pair.sol";
 import "./interfaces/IUniswapV2Router02.sol";
 
-contract SushiSwapYieldProgram is Ownable {
+// 1. mismo contrato puede handlear las dos versiones
+// pro: más fácil, única dirección
+// contra: no es facilmente extensible: subir una version más de masterchef implicaria cambiar el codigo y deployar de nuevo, teniendo dos versiones de SushiSwapYieldProgram; los balances quedarian mezclados
 
-    IUniswapV2Router02 private router;
-    IMasterChef private masterChef;
-    mapping(uint256 => uint256) public pidToLiquidity;
+// 2. un contrato por cada version de masterchef
+// pro: la liquidez queda asociada a la version de masterchef y no quedan mezclados los balances
+// contra: varias formas de hacer; necesariamente arrancariamos con varias direcciones (una para cada version)
 
-    event Subscribed(uint256 indexed pid, uint256 indexed liquidity);
+abstract contract SushiSwapYieldProgram is Ownable, MasterChefManager {
+    IUniswapV2Router02 internal router;
 
-    constructor(address routerAddress, address masterChefAddress) {
-        router = IUniswapV2Router02(routerAddress);
-        masterChef = IMasterChef(masterChefAddress);
+    event Subscribed(uint256 indexed amountA, uint256 indexed amountB, address indexed lptokenAddress);
+
+    constructor(IUniswapV2Router02 _router) {
+        router = _router;
     }
 
     function subscribe(
@@ -36,14 +39,14 @@ contract SushiSwapYieldProgram is Ownable {
         address lptokenAddress = getLPTokenAddres(tokenA, tokenB);
         require(lptokenAddress != address(0x0), "pair: non existant");
 
-        (bool valid, uint256 pid) = getPoolIndex(lptokenAddress);
-        require(valid, "pair: non existant on masterchef");
+        bool allowed = depositAllowed(lptokenAddress);
+        require(allowed, "pair: non existant on masterchef");
 
         // approve the sushiswap router to use your tokens
         approveTokens(tokenA, tokenB, amountADesired, amountBDesired);
 
         // provide liquidity on sushiswap by entering a pool using that is incentivezed by sushi
-        (, , uint256 liquidity) = router.addLiquidity(
+        (uint256 amountA, uint256 amountB, uint256 liquidity) = router.addLiquidity(
             tokenA,
             tokenB,
             amountADesired,
@@ -56,20 +59,16 @@ contract SushiSwapYieldProgram is Ownable {
 
         // approve masterchef smart contract to use your tokens (LPtokens)
         IERC20 lpt = IERC20(lptokenAddress);
-        lpt.approve(address(masterChef), liquidity);
+        lpt.approve(getAddress(), liquidity);
 
         // deposit the slp you received after supplying liquidity into a yield farm managed by masterchef contract, and earh sushi (safeTransferFrom, safeSushiTransfer?)
-        pidToLiquidity[pid] += liquidity;
-        masterChef.deposit(pid, liquidity);
+        deposit(lptokenAddress, liquidity);
 
-        emit Subscribed(pid, liquidity);
+        emit Subscribed(amountA, amountB, lptokenAddress);
     }
 
-    function unsubscribe(uint256 pid) external onlyOwner {
-        uint256 liquidity = pidToLiquidity[pid];
-        pidToLiquidity[pid] = 0;
-
-        masterChef.withdraw(pid, liquidity);
+    function unsubscribe(address lptokenAddress) external onlyOwner notZeroAddress(lptokenAddress) {
+        withdraw(lptokenAddress);
     }
 
     function approveTokens(address tokenA, address tokenB, uint256 amountA, uint256 amountB) private {
@@ -78,18 +77,6 @@ contract SushiSwapYieldProgram is Ownable {
 
         tA.approve(address(router), amountA);
         tB.approve(address(router), amountB);
-    }
-
-    function getPoolIndex(address lptokenAddress) private view returns(bool valid, uint256 pid) {
-        uint256 poolLength = masterChef.poolLength();
-        pid = 0;
-
-        for(pid; pid < poolLength; pid++) {
-            IMasterChef.PoolInfo memory poolInfo = masterChef.poolInfo(pid);
-            if(address(poolInfo.lpToken) == lptokenAddress) break;
-        }
-
-        valid = pid < poolLength;
     }
 
     function getLPTokenAddres(address tokenA, address tokenB) private view returns(address lptokenAddress) {

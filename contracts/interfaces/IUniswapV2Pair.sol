@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.17;
 
+// https://github.com/sushiswap/sushiswap/blob/archieve/canary/contracts/uniswapv2/interfaces/IUniswapV2Pair.sol
+
 interface IUniswapV2Pair {
     function name() external pure returns (string memory);
     function symbol() external pure returns (string memory);

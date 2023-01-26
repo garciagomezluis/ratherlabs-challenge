@@ -106,7 +106,7 @@ async function swapETHForTokens(
 async function main() {
     const [, , , , , , , , , , , , , , , , , , , account] = await ethers.getSigners();
 
-    const YP = await ethers.getContractFactory('SushiSwapYieldProgram');
+    const YP = await ethers.getContractFactory('SSYPV1');
 
     console.log('... deploying YP ...');
     const yp = await YP.connect(account).deploy(addressRouter, addressMasterChef);
@@ -145,24 +145,19 @@ async function main() {
                 810n * 10n ** 6n,
             );
 
-        const cr = await tx.wait();
+        await tx.wait();
 
         await printSushiStatus(lpt, yp);
-
-        const event = cr?.events?.find((event) => event.event === 'Subscribed');
-        const [pid] = event?.args || [0];
-
-        if (pid === 0) return;
 
         await mine(1000);
 
         console.log('... unsubscribing ...');
-        const tx1 = await yp.connect(account).unsubscribe(pid);
+        const tx1 = await yp.connect(account).unsubscribe(addressLPT);
 
         await tx1.wait();
         await printSushiStatus(lpt, yp);
     } catch (error) {
-        console.log('check params', (error as Error).message);
+        console.log('check params', error);
     }
 }
 
