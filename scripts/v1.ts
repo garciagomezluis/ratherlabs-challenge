@@ -9,25 +9,21 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { ethers } from 'hardhat';
 import { mine } from '@nomicfoundation/hardhat-network-helpers';
-import {
-    IERC20,
-    IUniswapV2Pair,
-    IUniswapV2Router02,
-    SushiSwapYieldProgram,
-} from '../typechain-types';
+import { IERC20, IUniswapV2Pair, IUniswapV2Router02, SSYPV1, SSYPV2 } from '../typechain-types';
 
 const addressSUSHI = '0x6B3595068778DD592e39A122f4f5a5cF09C90fE2';
 const addressWETH = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
 const addressUSDC = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
+// const addressALCX = '0xdBdb4d16EdA451D0503b854CF79D55697F90c8DF';
 
-const addressMasterChef = '0xc2EdaD668740f1aA35E4D8f227fB8E17dcA888Cd';
 const addressRouter = '0xd9e1cE17f2641f24aE83637ab66a2cca9C378B9F';
 const addressSushiFactory = '0xC0AEe478e3658e2610c5F7A4A2E1777cE9e4f2Ac';
 
+const addressMasterChefV1 = '0xc2EdaD668740f1aA35E4D8f227fB8E17dcA888Cd';
 const token0Address = addressWETH;
 const token1Address = addressUSDC;
 
-const printSushiStatus = async (lpt: IUniswapV2Pair, yp: SushiSwapYieldProgram) => {
+const printSushiStatus = async (lpt: IUniswapV2Pair, yp: SSYPV1 | SSYPV2) => {
     // non standard, just for testing
     const tokenABI = [
         'function balanceOf(address account) external view returns (uint256)',
@@ -109,7 +105,7 @@ async function main() {
     const YP = await ethers.getContractFactory('SSYPV1');
 
     console.log('... deploying YP ...');
-    const yp = await YP.connect(account).deploy(addressRouter, addressMasterChef);
+    const yp = await YP.connect(account).deploy(addressRouter, addressMasterChefV1);
 
     const router = await ethers.getContractAt('IUniswapV2Router02', addressRouter);
     const token0 = await ethers.getContractAt('IERC20', token0Address);
@@ -134,6 +130,7 @@ async function main() {
 
     try {
         console.log('... subscribing ...');
+
         const tx = await yp
             .connect(account)
             .subscribe(
