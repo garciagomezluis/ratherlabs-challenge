@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.17;
 
+// https://github.com/sushiswap/sushiswap/blob/archieve/canary/contracts/interfaces/IMasterChef.sol
+
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-interface IMasterChef {
+interface IMasterChefV1 {
     struct PoolInfo {
         IERC20 lpToken;
     }
