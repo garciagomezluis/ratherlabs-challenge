@@ -9,6 +9,7 @@
         "@commitlint/config-conventional": "^17.4.2",
         "@luchio/eslint-config-base-ts": "1.x",
         "@luchio/eslint-rules": "1.x",
+        "@nomicfoundation/hardhat-network-helpers": "^1.0.7",
         "@nomicfoundation/hardhat-toolbox": "^2.0.1",
         "@typescript-eslint/eslint-plugin": "4.x",
         "@typescript-eslint/parser": "4.x",
@@ -22,5 +23,9 @@
         "husky": "^8.0.3",
         "lint-staged": "^13.1.0",
         "prettier": "2.x"
+    },
+    "dependencies": {
+        "@openzeppelin/contracts": "^4.8.1",
+        "dotenv": "^16.0.3"
     }
 }
