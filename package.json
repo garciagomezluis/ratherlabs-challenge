@@ -2,7 +2,10 @@
     "name": "challenge",
     "version": "1.0.0",
     "scripts": {
-        "prepare": "husky install"
+        "prepare": "husky install",
+        "test": "npx hardhat test",
+        "play:v1": "npx hardhat run scripts/v1.ts",
+        "play:v2": "npx hardhat run scripts/v1.ts"
     },
     "devDependencies": {
         "@commitlint/cli": "^17.4.2",
