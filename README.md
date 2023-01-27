@@ -96,3 +96,8 @@ An 'unsubscribe' function was introduced just to complete the whole process and 
 As a pending improvement: MasterChef' contracts persist the main state in arrays. Getting the necessary index in this implementation is done in a linear search over that array: this could be inefficient and probably exists a better way to do it that I could not catch in the contracts screenings.
 
 Besides deploying the contracts, it would be interesting to export the interfaces to facilitate the use of this feature in others .sol files
+
+## Images (just for fun)
+
+![_1.jpeg](/assets/_1.jpeg)
+![_2.jpeg](/assets/_2.jpeg)
