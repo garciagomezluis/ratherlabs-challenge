@@ -3,6 +3,7 @@
     "version": "1.0.0",
     "scripts": {
         "prepare": "husky install",
+        "release": "standard-version",
         "test": "npx hardhat test",
         "play:v1": "npx hardhat run scripts/v1.ts",
         "play:v2": "npx hardhat run scripts/v1.ts"
@@ -25,7 +26,8 @@
         "hardhat": "^2.12.6",
         "husky": "^8.0.3",
         "lint-staged": "^13.1.0",
-        "prettier": "2.x"
+        "prettier": "2.x",
+        "standard-version": "^9.5.0"
     },
     "dependencies": {
         "@openzeppelin/contracts": "^4.8.1",
