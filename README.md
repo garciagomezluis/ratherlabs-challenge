@@ -36,7 +36,7 @@ MasterChefManager <- SushiSwapYieldProgram <- SSYPV2.sol
 
 __Explanation__
 
-The contracts that can be deployed are: SSYPV1.sol and SSYPV2.sol. Both of them have the same interface. From the user's point there is only one relevant function allowed for them to use:
+The contracts that can be deployed are: SSYPV1.sol and SSYPV2.sol. Both of them have the same interface. From the user's point of view there is only one relevant function allowed for them to use:
 
 ```solidity
 function subscribe(
