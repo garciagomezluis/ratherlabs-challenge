@@ -7,12 +7,12 @@ const config: HardhatUserConfig = {
     solidity: '0.8.17',
     networks: {
         mainnet: {
-            url: `${process.env.ALCHEMY_URL}`,
+            url: `${process.env.MAINNET_ALCHEMY_URL}`,
             accounts: [process.env.MAINNET_PRIVATE_KEY!],
         },
         hardhat: {
             forking: {
-                url: `${process.env.ALCHEMY_URL}`,
+                url: `${process.env.MAINNET_ALCHEMY_URL}`,
                 blockNumber: 16467465,
             },
             chainId: 1,
